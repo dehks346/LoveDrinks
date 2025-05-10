@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Diary</h1>
+    {% for log in user.drinklog_set.all %}
+        <a href="{% url 'log' user.username log.log_id %}">
+            <div class="drink-log">
+                <h2>{{ log.drink_id.drink_name }}</h2>
+                <p>{{ log.review }}</p>
+                <p>{{ log.logged_at|date:"M d, Y" }}</p>
+            </div>
+        </a>
+    {% endfor %}
+{% endblock %}

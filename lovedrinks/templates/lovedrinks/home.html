@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Drink Logger{% endblock %}
+
+{% block content %}
+
+    {% if user.is_authenticated %}
+        <h3>Your Drink Logs</h3>
+        <div class="log-row">
+            {% for x in drink_logs %}
+                <div class="log-row-item">
+                    <p>{{ x.drink_name }}</p>
+                    <p>{{ x.rating }}</p>
+                    <p>{{ x.review }}</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="following-container">
+            <h3>Following drink activity</h3>
+            <div class="log-row">
+                {% for x in following %}
+                    <div class="log-row-item">
+                        <p>{{ x.drink_name }}</p>
+                        <p>{{ x.rating }}</p>
+                        <p>{{ x.review }}</p>
+                        <p>{{ x.logged_at }}</p>
+                        <a href="{% url 'other_profile' x.user_id.username %}">{{ x.user_id.username }}</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAACMklEQVR4nO2YzUtVQRjGf6FRYl+koBLIjT4UdCmJILQTAiVF8i8IglbuWkUSQX+CiK50Idgy0oVoECFBgaAYQX5gbQxCcFGRlSMDz4HhcuWSd+bcc2UeGM6c9515n3nOec+cmYGIyoIJVF4CZ06CEAPMAmfTFuITrpjXwDmv0csgZEfXRaDWM0eqQlqAr6q/BS545ilIGipmDtjQ/QegzjNXQdJQMZuBz7ItA/We+QqShorZCKzJ/hFoqlQhFg3AinyfgCtpkIaKeRl4L/8WcDUN0lAxLwHv1GYbuJYGaaiYF4EltfsC3EiDNFTMWmDB+Xm2p0F6nJj/W775IPWJUhaamRJSlnGYKMQvTHwjQkytSkutFuAR0FvA1yTfCNB2xLrqPvAMeAjUlDCOoigWYFD+qTx7Tj+wpP8voMvx3wZ2Hf/vIqcqplxCxmV/DjxRfc55E99lmwDuAPdKHEcQIaeBPeCP1kv2yGdfT93eD6vPvMdxBBHSLNumY0v25a3AC9UfeBxHECEdsq06tlXZbgFvVO/Vx55w2FiZEnJTNnugkGBdtpyzNB8Cup0dYeaEnAf+Aj+AaqBKs9aBZqZR9Xmq9o+zKgTnqdvZaEB1u3216HE2S9ezJsQ4pVv5f6DyT9c+9TkFTKut9f3MgpBOYCav2JnJol8n7q+Au3n9qvShT+r/Mqa3cxTi6jdBXP16hokbKyGmlmeYmFpCTC3PMDG1hJhaWU0tk5FybJwYIRGkjEPrQLvKeIirLQAAAABJRU5ErkJggg==" alt="log">
+        </button>
+    
+
+       
+
+    
+        
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Log a new drink</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" id="drinkLogForm">
+                        {% csrf_token %}
+                        <input type="text" 
+                               id="drink_search" 
+                               name="drink_name" 
+                               placeholder="Search drinks..." 
+                               autocomplete="off" />
+                        <div id="drink_suggestions" class="suggestions-dropdown"></div>
+            
+                        <div>{{ form.rating }}</div>
+                        <div>{{ form.review }}</div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                          </div>
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        const searchInput = $('#drink_search');
+        const suggestionsDiv = $('#drink_suggestions');
+
+        searchInput.on('input', function() {
+            const query = searchInput.val();
+            if (query.length > 2) {
+                $.ajax({
+                    url: '{% url "search_drinks" %}',
+                    data: {
+                        'query': query,
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        suggestionsDiv.empty();
+                        if (data.length > 0) {
+                            data.forEach(function(drink) {
+                                const suggestion = $('<div>')
+                                    .text(drink.name)
+                                    .addClass('suggestion-item')
+                                    .data('drink-id', drink.id)
+                                    .click(function() {
+                                        searchInput.val(drink.name);
+                                        suggestionsDiv.empty();
+                                    });
+                                suggestionsDiv.append(suggestion);
+                            });
+                        } else {
+                            suggestionsDiv.empty();
+                        }
+                    }
+                });
+            } else {
+                suggestionsDiv.empty();
+            }
+        });
+
+        // Close suggestions when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#drink_search').length) {
+                suggestionsDiv.empty();
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Search</h2>
+                    
+                    <!-- Search Type Selector -->
+                    <div class="search-type-selector mb-4">
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="search_type" id="drinks" value="drinks" {% if search_type == 'drinks' %}checked{% endif %}>
+                            <label class="btn btn-outline-primary" for="drinks">Drinks</label>
+
+                            <input type="radio" class="btn-check" name="search_type" id="users" value="users" {% if search_type == 'users' %}checked{% endif %}>
+                            <label class="btn btn-outline-primary" for="users">Users</label>
+                        </div>
+                    </div>
+
+                    <!-- Search Form -->
+                    <form method="GET" action="{% url 'search' %}" id="searchForm">
+                        <div class="form-group position-relative">
+                            <input type="text" 
+                                   id="search_input" 
+                                   name="query" 
+                                   class="form-control form-control-lg" 
+                                   placeholder="Search..." 
+                                   value="{{ query }}"
+                                   autocomplete="off">
+                            <div id="search_suggestions" class="suggestions-dropdown"></div>
+                        </div>
+                        <input type="hidden" name="search_type" id="search_type" value="{{ search_type }}">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.search-type-selector {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.btn-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-check:checked + .btn-outline-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+}
+
+.suggestion-item {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.suggestion-item:hover {
+    background-color: #f8f9fa;
+    text-decoration: none;
+    color: inherit;
+}
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    const searchInput = $('#search_input');
+    const suggestionsDiv = $('#search_suggestions');
+    const searchTypeInput = $('#search_type');
+    const searchForm = $('#searchForm');
+
+    // Handle search type selection
+    $('input[name="search_type"]').on('change', function() {
+        searchTypeInput.val($(this).val());
+        searchInput.val('').trigger('input');
+    });
+
+    // Handle search input
+    searchInput.on('input', function() {
+        const query = $(this).val();
+        const searchType = searchTypeInput.val();
+        
+        if (query.length > 2) {
+            $.ajax({
+                url: searchType === 'drinks' ? '{% url "search_drinks" %}' : '{% url "search_users" %}',
+                data: { 'query': query },
+                dataType: 'json',
+                success: function(data) {
+                    suggestionsDiv.empty();
+                    if (data.length > 0) {
+                        data.forEach(function(item) {
+                            const suggestion = $('<a>')
+                                .text(item.name)
+                                .addClass('suggestion-item')
+                                .data('id', item.id)
+                                .attr('href', searchType === 'drinks' ? 
+                                    `/drink/${item.id}` : // Placeholder for drink page
+                                    `/profile/${item.name}`) // User profile page
+                                .click(function(e) {
+                                    e.preventDefault();
+                                    window.location.href = $(this).attr('href');
+                                });
+                            suggestionsDiv.append(suggestion);
+                        });
+                        suggestionsDiv.show();
+                    } else {
+                        suggestionsDiv.hide();
+                    }
+                }
+            });
+        } else {
+            suggestionsDiv.hide();
+        }
+    });
+
+    // Close suggestions when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#search_input, #search_suggestions').length) {
+            suggestionsDiv.hide();
+        }
+    });
+
+    // Handle form submission
+    searchForm.on('submit', function(e) {
+        if (!searchInput.val()) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}

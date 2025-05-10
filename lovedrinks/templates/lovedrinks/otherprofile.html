@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=007bff&color=fff" 
+             alt="{{ user.username }}" 
+             class="profile-avatar">
+        <div class="profile-info">
+            <h1 class="profile-username">{{ user.username }}</h1>
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <a href="{% url 'followers' %}">
+                        <div class="stat-value">{{ user.followers.count }}</div>
+                        <div class="stat-label">Followers</div>
+                    </a>
+                </div>
+                <div class="stat-item">
+                    <a href="{% url 'following' %}">
+                        <div class="stat-value">{{ user.following.count }}</div>
+                        <div class="stat-label">Following</div>
+                    </a>
+                </div>
+                <div class="stat-item">
+                    <a href="{% url 'diary' user.username %}">
+                        <div class="stat-value">{{ user.drinklog_set.count }}</div>
+                        <div class="stat-label">Drinks</div>
+                    </a>
+                </div>
+            </div>
+            <div class="profile-actions">
+                {% if user != request.user %}
+                    {% if follows %}
+                        <a href="{% url 'other_profile' user.username %}?action=unfollow" class="btn btn-primary follow-btn">Unfollow</a>
+                    {% else %}
+                        <a href="{% url 'other_profile' user.username %}?action=follow" class="btn btn-outline-primary follow-btn">Follow</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <div class="content-section">
+            <h2 class="section-title">Recent Drinks</h2>
+            <div class="drink-grid">
+                {% for log in user.drinklog_set.all|slice:":6" %}
+                <div class="drink-card">
+                    <div class="drink-name">{{ log.drink_id.drink_name }}</div>
+                    <div class="drink-rating">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= log.rating %}
+                                ★
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="drink-review">{{ log.review|truncatechars:100 }}</div>
+                    <div class="drink-date">{{ log.logged_at|date:"M d, Y" }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

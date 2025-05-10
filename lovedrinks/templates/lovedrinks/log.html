@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>previous Diary Entry</h1>
+    <p>{{ diary_entry.drink_id.drink_name }}</p>
+    <p>{{ diary_entry.review }}</p>
+    <p>{{ diary_entry.logged_at }}</p>
+
+{% endblock %}
