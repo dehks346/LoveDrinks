@@ -1,0 +1,430 @@
+/* Global Styles */
+:root {
+    --primary: #FF6B6B;
+    --secondary: #4ECDC4;
+    --accent: #FFE66D;
+    --dark: #2C3E50;
+    --light: #F7F9FC;
+    --success: #2ECC71;
+    --warning: #F1C40F;
+    --danger: #E74C3C;
+    --card-bg: #fff;
+    --card-shadow: 0 4px 16px rgba(44, 62, 80, 0.08);
+    --input-bg: #f9fafb;
+    --input-border: #e0e6ed;
+    --error: #E74C3C;
+}
+
+body {
+    background-color: var(--light);
+    color: var(--dark);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Container Styles */
+.log-container {
+    width: 100%;
+    margin: 2rem 0;
+    padding: 0 1rem;
+}
+
+.following-container {
+    margin-top: 3rem;
+}
+
+/* Row Styles */
+.log-row {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding: 1rem 0.5rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.log-row::-webkit-scrollbar {
+    height: 8px;
+}
+
+.log-row::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+.log-row::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+/* Diary Item Card */
+.diary-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #eaeaea;
+    width: 350px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+}
+
+.diary-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--primary), var(--secondary));
+}
+
+.diary-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05), 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-color: rgba(255, 107, 107, 0.2);
+}
+
+/* Diary Content */
+.diary-content {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+/* Diary Header */
+.diary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.diary-header-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.diary-header-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+    background: var(--light);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+}
+
+/* Diary Rating */
+.diary-rating {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.diary-rating-icon {
+    color: var(--accent);
+    font-size: 1.25rem;
+    margin-right: 0.125rem;
+}
+
+.diary-rating-text {
+    margin-left: 0.75rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* Diary Text */
+.diary-content p {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
+}
+
+/* Diary Footer */
+.diary-footer {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--light);
+    border-top: 1px solid #eaeaea;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.diary-footer-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+.diary-item:hover .diary-footer-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.diary-footer-user {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.diary-footer-name {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.diary-footer-link {
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.diary-footer-link:hover {
+    color: var(--primary);
+    transform: scale(1.05);
+}
+
+/* Section Headers */
+h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+}
+
+/* Add Drink Button */
+#openModal {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--primary);
+    border: none;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+#openModal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+}
+
+#openModal img {
+    width: 1.5rem;
+    height: 1.5rem;
+    filter: brightness(0) invert(1);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    margin: 15% auto;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    width: 80%;
+    max-width: 500px;
+    animation: fadeIn 0.3s;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--dark);
+    text-decoration: none;
+}
+
+.log-drink-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.log-drink-form label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--dark);
+}
+
+.log-drink-form input,
+.log-drink-form textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1.5px solid var(--input-border);
+    background: var(--input-bg);
+    font-size: 1rem;
+    transition: border 0.2s;
+}
+
+.log-drink-form input:focus,
+.log-drink-form textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Home Page Styles */
+.home-container {
+    max-width: 800px;
+    width: 100%;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.7s cubic-bezier(.4,0,.2,1);
+}
+
+.home-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.home-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.home-subtitle {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.home-actions {
+    margin-top: 1.5rem;
+}
+
+.btn {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.85rem 1.5rem;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(255,107,107,0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn:hover {
+    box-shadow: 0 4px 16px rgba(44, 62, 80, 0.12);
+    transform: translateY(-2px) scale(1.03);
+}
+
+/* Form Styles */
+#drink_search {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #eaeaea;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+}
+
+#drink_search:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #eaeaea;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.suggestion-item:hover {
+    background-color: var(--light);
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #ff5252;
+    transform: translateY(-1px);
+}
+
+#cancelModal {
+    background-color: #eaeaea;
+    color: #4b5563;
+    margin-right: 0.75rem;
+}
+
+#cancelModal:hover {
+    background-color: #d1d5db;
+}

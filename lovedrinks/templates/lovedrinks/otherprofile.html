@@ -8,20 +8,24 @@
 {% block content %}
 <div class="profile-container">
     <div class="profile-header">
-        <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=007bff&color=fff" 
+        {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-avatar">
+        {% else %}
+            <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=FF6B6B&color=fff" 
              alt="{{ user.username }}" 
              class="profile-avatar">
+        {% endif %}
         <div class="profile-info">
             <h1 class="profile-username">{{ user.username }}</h1>
             <div class="profile-stats">
                 <div class="stat-item">
-                    <a href="{% url 'followers' %}">
+                    <a href="{% url 'followers' user.username %}">
                         <div class="stat-value">{{ user.followers.count }}</div>
                         <div class="stat-label">Followers</div>
                     </a>
                 </div>
                 <div class="stat-item">
-                    <a href="{% url 'following' %}">
+                    <a href="{% url 'following' user.username %}">
                         <div class="stat-value">{{ user.following.count }}</div>
                         <div class="stat-label">Following</div>
                     </a>
@@ -31,6 +35,46 @@
                         <div class="stat-value">{{ user.drinklog_set.count }}</div>
                         <div class="stat-label">Drinks</div>
                     </a>
+                </div>
+            </div>
+            <div class="top-drinks">
+                <h3>Top Drinks</h3>
+                <div class="top-drinks-list">
+                    {% if top_drink_1 %}
+                    <div class="top-drink-item">
+                        <span class="rank">1.</span>
+                        <span class="drink-name">{{ top_drink_1.drink_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if top_drink_2 %}
+                    <div class="top-drink-item">
+                        <span class="rank">2.</span>
+                        <span class="drink-name">{{ top_drink_2.drink_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if top_drink_3 %}
+                    <div class="top-drink-item">
+                        <span class="rank">3.</span>
+                        <span class="drink-name">{{ top_drink_3.drink_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if top_drink_4 %}
+                    <div class="top-drink-item">
+                        <span class="rank">4.</span>
+                        <span class="drink-name">{{ top_drink_4.drink_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if top_drink_5 %}
+                    <div class="top-drink-item">
+                        <span class="rank">5.</span>
+                        <span class="drink-name">{{ top_drink_5.drink_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if not top_drink_1 and not top_drink_2 and not top_drink_3 and not top_drink_4 and not top_drink_5 %}
+                    <div class="top-drink-item">
+                        <span class="drink-name">No top drinks yet</span>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="profile-actions">

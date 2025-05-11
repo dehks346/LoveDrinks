@@ -1,9 +1,15 @@
 from django.contrib import admin
 from .models import drinks, DrinkLog, follows, user_stats, drink_trending
+from .models import UserProfile
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'profile_picture')
+    search_fields = ('user__username',)
 
 @admin.register(drinks)
 class DrinksAdmin(admin.ModelAdmin):
-    list_display = ('drink_id', 'drink_name', 'drink_type', 'drink_producer', 'drink_abv')
+    list_display = ('drink_id', 'drink_name', 'drink_type', 'drink_producer', 'drink_abv', 'drink_rating')
     search_fields = ('drink_name', 'drink_type', 'drink_producer')
     list_filter = ('drink_type', 'drink_producer')
 
@@ -21,7 +27,7 @@ class FollowsAdmin(admin.ModelAdmin):
 
 @admin.register(user_stats)
 class UserStatsAdmin(admin.ModelAdmin):
-    list_display = ('user_id', 'total_logged')
+    list_display = ('user_id', 'top_drink_1', 'top_drink_2', 'top_drink_3', 'top_drink_4', 'top_drink_5')
     search_fields = ('user_id__username',)
 
 

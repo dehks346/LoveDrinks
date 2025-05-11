@@ -6,7 +6,7 @@
 
 /* General styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
     line-height: 1.6;
@@ -44,52 +44,6 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* Drink log styles */
-.log-row {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    width: 100%;
-    gap: 1rem;
-    padding: 1rem 0;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    flex-wrap: nowrap; /* Prevent wrapping */
-}
-
-.log-row::-webkit-scrollbar {
-    height: 8px;
-}
-
-.log-row::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.log-row::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-.log-row::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-.log-row-item {
-    flex: 0 0 300px; /* Fixed width, don't grow or shrink */
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border: 1px solid #ddd;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.log-row-item p {
-    margin: 0;
-}
 
 /* Search suggestions */
 .suggestions-dropdown {
@@ -114,8 +68,37 @@ button:hover {
 
 /* Footer */
 footer {
-    background-color: #f8f9fa;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     padding: 1rem;
     text-align: center;
-    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 } 
+
+footer div{
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-icon{
+    width: 2rem;
+    height: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.footer-icon:hover{
+    transform: scale(1.1);
+}
+
+footer div a{
+    margin: 0 0.5rem;
+    text-decoration: none;
+}

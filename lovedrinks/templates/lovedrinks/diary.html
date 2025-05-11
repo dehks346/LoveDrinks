@@ -1,14 +1,47 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/diarypage.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Diary</h1>
-    {% for log in user.drinklog_set.all %}
-        <a href="{% url 'log' user.username log.log_id %}">
-            <div class="drink-log">
-                <h2>{{ log.drink_id.drink_name }}</h2>
-                <p>{{ log.review }}</p>
-                <p>{{ log.logged_at|date:"M d, Y" }}</p>
+<div class="diary-container">
+    <div class="diary-header">
+        <h1>Drink Diary</h1>
+    </div>
+
+    {% regroup user.drinklog_set.all|dictsortreversed:"logged_at" by logged_at|date:"F d, Y" as date_list %}
+    
+    {% for date in date_list %}
+        <div class="date-group">
+            <div class="date-indicator">{{ date.grouper }}</div>
+            <div class="diary-grid">
+                {% for log in date.list %}
+                    <a href="{% url 'log' user.username log.log_id %}" class="diary-card">
+                        <div class="diary-content">
+                            <h2 class="diary-name">{{ log.drink_id.drink_name }}</h2>
+                            <div class="diary-rating">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= log.rating %}
+                                        <span class="diary-rating-icon">★</span>
+                                    {% else %}
+                                        <span class="diary-rating-icon">☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p class="diary-review">{{ log.review }}</p>
+                            <div class="diary-date">{{ log.logged_at|date:"g:i A" }}</div>
+                        </div>
+                    </a>
+                {% endfor %}
             </div>
-        </a>
+        </div>
+    {% empty %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🍺</div>
+            <p class="empty-state-text">No drinks logged yet</p>
+        </div>
     {% endfor %}
+</div>
 {% endblock %}

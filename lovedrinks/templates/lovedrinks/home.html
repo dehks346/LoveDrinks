@@ -1,52 +1,90 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}Drink Logger{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
 
 {% block content %}
 
     {% if user.is_authenticated %}
         <h3>Your Drink Logs</h3>
-        <div class="log-row">
-            {% for x in drink_logs %}
-                <div class="log-row-item">
-                    <p>{{ x.drink_name }}</p>
-                    <p>{{ x.rating }}</p>
-                    <p>{{ x.review }}</p>
-                </div>
-            {% endfor %}
-        </div>
-
-        <div class="following-container">
-            <h3>Following drink activity</h3>
+        <div class="log-container">
             <div class="log-row">
-                {% for x in following %}
-                    <div class="log-row-item">
-                        <p>{{ x.drink_name }}</p>
-                        <p>{{ x.rating }}</p>
-                        <p>{{ x.review }}</p>
-                        <p>{{ x.logged_at }}</p>
-                        <a href="{% url 'other_profile' x.user_id.username %}">{{ x.user_id.username }}</a>
+                {% for x in drink_logs %}
+                    <div class="diary-item">
+                        <div class="diary-content">
+                            <div class="diary-header">
+                                <span class="diary-header-name">{{ x.drink_name }}</span>
+                                <span class="diary-header-date">{{x.logged_at}}</span>
+                            </div>
+                            <div class="diary-rating">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= x.rating %}
+                                        <span class="diary-rating-icon">★</span>
+                                    {% else %}
+                                        <span class="diary-rating-icon">☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="diary-rating-text">{{ x.rating }} / 5</span>
+                            </div>
+                            <p>{{ x.review }}</p>
+                        </div>
+                        <div class="diary-footer">
+                            <a href="{% url 'log' user.username x.log_id %}">
+                                <img src="{% static 'images/edit.png' %}" alt="edit" class="diary-footer-icon">
+                            </a>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+
+        <div class="following-container">
+            <h3>Following drink activity</h3>
+            <div class="log-container">
+                <div class="log-row">
+                    {% for x in following %}
+                        <div class="diary-item">
+                            <div class="diary-content">
+                                <div class="diary-header">
+                                    <span class="diary-header-name">{{ x.drink_name }}</span>
+                                    <span class="diary-header-date">{{x.logged_at}}</span>
+                                </div>
+                                <div class="diary-rating">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= x.rating %}
+                                        <span class="diary-rating-icon">★</span>
+                                    {% else %}
+                                        <span class="diary-rating-icon">☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="diary-rating-text">{{ x.rating }} / 5</span>
+                                </div>
+                                <p>{{ x.review }}</p>
+                            </div>
+                            <div class="diary-footer">
+                                <a href="{% url 'other_profile' x.user_id.username %}" class="diary-footer-link">
+                                    <div class="diary-footer-user">
+                                        <img src="{{ x.user_id.profile.profile_picture.url }}" alt="profile" class="diary-footer-icon">
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn" id="openModal">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAACMklEQVR4nO2YzUtVQRjGf6FRYl+koBLIjT4UdCmJILQTAiVF8i8IglbuWkUSQX+CiK50Idgy0oVoECFBgaAYQX5gbQxCcFGRlSMDz4HhcuWSd+bcc2UeGM6c9515n3nOec+cmYGIyoIJVF4CZ06CEAPMAmfTFuITrpjXwDmv0csgZEfXRaDWM0eqQlqAr6q/BS545ilIGipmDtjQ/QegzjNXQdJQMZuBz7ItA/We+QqShorZCKzJ/hFoqlQhFg3AinyfgCtpkIaKeRl4L/8WcDUN0lAxLwHv1GYbuJYGaaiYF4EltfsC3EiDNFTMWmDB+Xm2p0F6nJj/W775IPWJUhaamRJSlnGYKMQvTHwjQkytSkutFuAR0FvA1yTfCNB2xLrqPvAMeAjUlDCOoigWYFD+qTx7Tj+wpP8voMvx3wZ2Hf/vIqcqplxCxmV/DjxRfc55E99lmwDuAPdKHEcQIaeBPeCP1kv2yGdfT93eD6vPvMdxBBHSLNumY0v25a3AC9UfeBxHECEdsq06tlXZbgFvVO/Vx55w2FiZEnJTNnugkGBdtpyzNB8Cup0dYeaEnAf+Aj+AaqBKs9aBZqZR9Xmq9o+zKgTnqdvZaEB1u3216HE2S9ezJsQ4pVv5f6DyT9c+9TkFTKut9f3MgpBOYCav2JnJol8n7q+Au3n9qvShT+r/Mqa3cxTi6jdBXP16hokbKyGmlmeYmFpCTC3PMDG1hJhaWU0tk5FybJwYIRGkjEPrQLvKeIirLQAAAABJRU5ErkJggg==" alt="log">
         </button>
     
-
-       
-
-    
-        
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
+        <div id="modal" class="modal">
+            <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Log a new drink</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+                    <h5>Log a new drink</h5>
+                    <button type="button" class="close-button" id="closeModal">&times;</button>
                 </div>
                 <div class="modal-body">
                     <form method="POST" id="drinkLogForm">
@@ -62,14 +100,13 @@
                         <div>{{ form.review }}</div>
                         
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                          </div>
+                            <button type="button" class="btn" id="cancelModal">Close</button>
+                            <button type="submit" class="btn">Submit</button>
+                        </div>
                     </form>
                 </div>
-              </div>
             </div>
-          </div>
+        </div>
     {% else %}
         <a href="{% url 'login' %}">Login</a>
     {% endif %}
@@ -77,50 +114,88 @@
 
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+
 <script>
     $(document).ready(function() {
-        const searchInput = $('#drink_search');
-        const suggestionsDiv = $('#drink_suggestions');
+        // Modal functionality
+        const modal = document.getElementById('modal');
+        const openModalBtn = document.getElementById('openModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelModalBtn = document.getElementById('cancelModal');
 
-        searchInput.on('input', function() {
-            const query = searchInput.val();
-            if (query.length > 2) {
-                $.ajax({
-                    url: '{% url "search_drinks" %}',
-                    data: {
-                        'query': query,
-                    },
-                    dataType: 'json',
-                    success: function(data) {
-                        suggestionsDiv.empty();
-                        if (data.length > 0) {
-                            data.forEach(function(drink) {
-                                const suggestion = $('<div>')
-                                    .text(drink.name)
-                                    .addClass('suggestion-item')
-                                    .data('drink-id', drink.id)
-                                    .click(function() {
-                                        searchInput.val(drink.name);
-                                        suggestionsDiv.empty();
-                                    });
-                                suggestionsDiv.append(suggestion);
-                            });
-                        } else {
-                            suggestionsDiv.empty();
-                        }
-                    }
+        openModalBtn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        closeModalBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        cancelModalBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        new Autocomplete('#autocomplete', {
+            search: input => {
+                const url = `/search_drinks?drinks=${input}`;
+                return new Promise(resolve => {
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => resolve(data.data))
+                        .catch(() => resolve([]));
                 });
-            } else {
-                suggestionsDiv.empty();
-            }
+            },
         });
 
-        // Close suggestions when clicking outside
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('#drink_search').length) {
-                suggestionsDiv.empty();
-            }
-        });
+        const searchForm = document.querySelector('#search_form');
+
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('drink_search');
+        const suggestionsDiv = document.getElementById('drink_suggestions');
+
+        if (searchInput && suggestionsDiv) {
+            searchInput.addEventListener('input', function() {
+                const query = searchInput.value;
+                if (query.length > 2) {
+                    fetch(`/search_drinks/?drinks=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            suggestionsDiv.innerHTML = '';
+                            if (data.data.length > 0) {
+                                data.data.forEach(drink => {
+                                    const suggestion = document.createElement('div');
+                                    suggestion.textContent = drink;
+                                    suggestion.className = 'suggestion-item';
+                                    suggestion.addEventListener('click', function() {
+                                        searchInput.value = drink;
+                                        suggestionsDiv.innerHTML = '';
+                                    });
+                                    suggestionsDiv.appendChild(suggestion);
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                } else {
+                    suggestionsDiv.innerHTML = '';
+                }
+            });
+
+            // Close suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.innerHTML = '';
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/top_drinks.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="top-drinks-container">
+    <div class="top-drinks-header">
+        <h1 class="top-drinks-title">Top Drinks</h1>
+        <p class="top-drinks-subtitle">Select your favorite drinks to display on your profile</p>
+    </div>
+
+    <form method="post" class="top-drinks-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.top_drink_1.id_for_label }}">Top Drink #1</label>
+            {{ form.top_drink_1 }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.top_drink_2.id_for_label }}">Top Drink #2</label>
+            {{ form.top_drink_2 }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.top_drink_3.id_for_label }}">Top Drink #3</label>
+            {{ form.top_drink_3 }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.top_drink_4.id_for_label }}">Top Drink #4</label>
+            {{ form.top_drink_4 }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.top_drink_5.id_for_label }}">Top Drink #5</label>
+            {{ form.top_drink_5 }}
+        </div>
+        <button type="submit" class="submit-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+            Save Changes
+        </button>
+    </form>
+
+    <div class="current-top-drinks">
+        <h2 class="current-top-drinks-title">Current Top Drinks</h2>
+        <div class="top-drinks-list">
+            {% if top_drink_1 %}
+            <div class="top-drink-item">
+                <span class="rank">1</span>
+                <span class="drink-name">{{ top_drink_1.drink_name }}</span>
+            </div>
+            {% endif %}
+            {% if top_drink_2 %}
+            <div class="top-drink-item">
+                <span class="rank">2</span>
+                <span class="drink-name">{{ top_drink_2.drink_name }}</span>
+            </div>
+            {% endif %}
+            {% if top_drink_3 %}
+            <div class="top-drink-item">
+                <span class="rank">3</span>
+                <span class="drink-name">{{ top_drink_3.drink_name }}</span>
+            </div>
+            {% endif %}
+            {% if top_drink_4 %}
+            <div class="top-drink-item">
+                <span class="rank">4</span>
+                <span class="drink-name">{{ top_drink_4.drink_name }}</span>
+            </div>
+            {% endif %}
+            {% if top_drink_5 %}
+            <div class="top-drink-item">
+                <span class="rank">5</span>
+                <span class="drink-name">{{ top_drink_5.drink_name }}</span>
+            </div>
+            {% endif %}
+            {% if not top_drink_1 and not top_drink_2 and not top_drink_3 and not top_drink_4 and not top_drink_5 %}
+            <div class="empty-state">
+                <p>No top drinks selected yet</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

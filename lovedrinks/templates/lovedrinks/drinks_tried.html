@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/drinks_tried.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="drinks-tried-container">
+    <div class="drinks-tried-header">
+        <h1 class="drinks-tried-title">Drinks Tried</h1>
+    </div>
+
+    <div class="stats-section">
+        <div class="stat-card">
+            <div class="stat-title">Total Drinks Tried</div>
+            <div class="stat-value">{{ total_drinks_tried }}</div>
+            <div class="stat-description">out of {{ total_drinks_possible }} possible drinks</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Total Drinks Logged</div>
+            <div class="stat-value">{{ total_drinks_logged }}</div>
+            <div class="stat-description">unique drink experiences</div>
+        </div>
+    </div>
+
+    <div class="progress-section">
+        <h2 class="progress-title">Progress</h2>
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width: {{ percentage }}%"></div>
+        </div>
+        <div class="progress-text">
+            <span>{{ total_drinks_tried }} drinks tried</span>
+            <span>{{ total_drinks_possible }} total drinks</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Animate progress bar on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressBar = document.querySelector('.progress-bar');
+        progressBar.style.width = '0';
+        setTimeout(() => {
+            progressBar.style.width = '{{ percentage }}%';
+        }, 100);
+    });
+</script>
+{% endblock %}

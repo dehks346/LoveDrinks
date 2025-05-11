@@ -1,18 +1,36 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    {% block content %}
-        <h1>Register a new user</h1>
-        <form method="post">
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="auth-title">Create Account</div>
+            <div class="auth-subtitle">Join the beer tracking fun!</div>
+        </div>
+        <form method="post" class="auth-form">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button>Submit</button>
+            {% if form.errors %}
+                <ul class="errorlist">{% for field in form %}{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}{% endfor %}{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+            {% for field in form %}
+                <div>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}<div class="helptext">{{ field.help_text }}</div>{% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="auth-btn">Register</button>
         </form>
-    {% endblock %}
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'accounts:login' %}">Log in</a>
+        </div>
+    </div>
 </body>
 </html>

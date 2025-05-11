@@ -1,160 +1,135 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/searchpage.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title text-center mb-4">Search</h2>
-                    
-                    <!-- Search Type Selector -->
-                    <div class="search-type-selector mb-4">
-                        <div class="btn-group" role="group">
-                            <input type="radio" class="btn-check" name="search_type" id="drinks" value="drinks" {% if search_type == 'drinks' %}checked{% endif %}>
-                            <label class="btn btn-outline-primary" for="drinks">Drinks</label>
+<div class="search-container">
+    <div class="search-header">
+        <h1>Discover Drinks & People</h1>
+    </div>
 
-                            <input type="radio" class="btn-check" name="search_type" id="users" value="users" {% if search_type == 'users' %}checked{% endif %}>
-                            <label class="btn btn-outline-primary" for="users">Users</label>
-                        </div>
-                    </div>
-
-                    <!-- Search Form -->
-                    <form method="GET" action="{% url 'search' %}" id="searchForm">
-                        <div class="form-group position-relative">
-                            <input type="text" 
-                                   id="search_input" 
-                                   name="query" 
-                                   class="form-control form-control-lg" 
-                                   placeholder="Search..." 
-                                   value="{{ query }}"
-                                   autocomplete="off">
-                            <div id="search_suggestions" class="suggestions-dropdown"></div>
-                        </div>
-                        <input type="hidden" name="search_type" id="search_type" value="{{ search_type }}">
-                    </form>
-                </div>
-            </div>
+    <form action="" id="search_form">
+        <div class="search-type-selector">
+            <input type="radio" id="drinks" name="search_type" value="drinks" checked>
+            <label for="drinks">Drinks</label>
+            
+            <input type="radio" id="users" name="search_type" value="users">
+            <label for="users">People</label>
         </div>
+    </form>
+
+    <div id="autocomplete" class="autocomplete">
+        <input class="autocomplete-input" placeholder="Search for drinks or people..." />
+        <ul class="autocomplete-result-list"></ul>
     </div>
 </div>
 
+<script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+<script>
+    let autocompleteInstance = null;
+
+    const initAutocomplete = (searchType) => {
+        // If there's already an instance, destroy it by replacing the input element
+        const parent = document.querySelector('#autocomplete');
+        const oldInput = parent.querySelector('.autocomplete-input');
+        const newInput = oldInput.cloneNode(); // copy without events
+        oldInput.replaceWith(newInput); // removes old input + listeners
+
+        autocompleteInstance = new Autocomplete('#autocomplete', {
+            search: input => {
+                const url = searchType === 'drinks'
+                    ? `/search_drinks?drinks=${input}`
+                    : `/search_users?user=${input}`;
+                return new Promise(resolve => {
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => resolve(data.data))
+                        .catch(() => resolve([]));
+                });
+            },
+            onSubmit: result => {
+                if (searchType === 'drinks') {
+                    window.location.href = `/drink/${result}`;
+                } else {
+                    window.location.href = `/profile/${result}`;
+                }
+            }
+        });
+    };
+
+    const searchForm = document.querySelector('#search_form');
+
+    // Initialize on page load
+    const defaultSearchType = searchForm.querySelector('input[name="search_type"]:checked').value;
+    initAutocomplete(defaultSearchType);
+
+    // Re-initialize on change
+    searchForm.addEventListener('change', e => {
+        if (e.target.name === 'search_type') {
+            initAutocomplete(e.target.value);
+        }
+    });
+</script>
+
 <style>
-.search-type-selector {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
+.autocomplete {
+    position: relative;
+    margin-top: 2rem;
 }
 
-.btn-group {
-    display: flex;
-    gap: 0.5rem;
+.autocomplete-input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1.125rem;
+    border: 2px solid #eaeaea;
+    border-radius: 1rem;
+    background: white;
+    transition: all 0.3s ease;
 }
 
-.btn-check:checked + .btn-outline-primary {
-    background-color: #007bff;
-    color: white;
+.autocomplete-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
 }
 
-.suggestions-dropdown {
+.autocomplete-result-list {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
     background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #eaeaea;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     z-index: 1000;
     max-height: 300px;
     overflow-y: auto;
-    display: none;
+    margin-top: 0.5rem;
+    list-style: none;
+    padding: 0;
 }
 
-.suggestion-item {
-    padding: 0.5rem 1rem;
+.autocomplete-result-list li {
+    padding: 1rem 1.5rem;
     cursor: pointer;
-    transition: background-color 0.2s;
-    text-decoration: none;
-    color: inherit;
-    display: block;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #eaeaea;
 }
 
-.suggestion-item:hover {
-    background-color: #f8f9fa;
-    text-decoration: none;
-    color: inherit;
+.autocomplete-result-list li:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-result-list li:hover {
+    background-color: var(--light);
+}
+
+.autocomplete-result-list li[aria-selected="true"] {
+    background-color: var(--light);
 }
 </style>
-
-{% endblock %}
-
-{% block extra_js %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    const searchInput = $('#search_input');
-    const suggestionsDiv = $('#search_suggestions');
-    const searchTypeInput = $('#search_type');
-    const searchForm = $('#searchForm');
-
-    // Handle search type selection
-    $('input[name="search_type"]').on('change', function() {
-        searchTypeInput.val($(this).val());
-        searchInput.val('').trigger('input');
-    });
-
-    // Handle search input
-    searchInput.on('input', function() {
-        const query = $(this).val();
-        const searchType = searchTypeInput.val();
-        
-        if (query.length > 2) {
-            $.ajax({
-                url: searchType === 'drinks' ? '{% url "search_drinks" %}' : '{% url "search_users" %}',
-                data: { 'query': query },
-                dataType: 'json',
-                success: function(data) {
-                    suggestionsDiv.empty();
-                    if (data.length > 0) {
-                        data.forEach(function(item) {
-                            const suggestion = $('<a>')
-                                .text(item.name)
-                                .addClass('suggestion-item')
-                                .data('id', item.id)
-                                .attr('href', searchType === 'drinks' ? 
-                                    `/drink/${item.id}` : // Placeholder for drink page
-                                    `/profile/${item.name}`) // User profile page
-                                .click(function(e) {
-                                    e.preventDefault();
-                                    window.location.href = $(this).attr('href');
-                                });
-                            suggestionsDiv.append(suggestion);
-                        });
-                        suggestionsDiv.show();
-                    } else {
-                        suggestionsDiv.hide();
-                    }
-                }
-            });
-        } else {
-            suggestionsDiv.hide();
-        }
-    });
-
-    // Close suggestions when clicking outside
-    $(document).on('click', function(e) {
-        if (!$(e.target).closest('#search_input, #search_suggestions').length) {
-            suggestionsDiv.hide();
-        }
-    });
-
-    // Handle form submission
-    searchForm.on('submit', function(e) {
-        if (!searchInput.val()) {
-            e.preventDefault();
-        }
-    });
-});
-</script>
 {% endblock %}
